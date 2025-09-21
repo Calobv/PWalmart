@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="http://localhost:8080/WalmartWS/InfoWalmartWS?wsdl" uri="wsdl/localhost_8080/WalmartWS/InfoWalmartWS.wsdl"/>
+    <system systemId="http://localhost:8080/WalmartWS/InfoWalmartWS?xsd=1" uri="wsdl/localhost_8080/WalmartWS/InfoWalmartWS.xsd_1.xsd"/>
+    <system systemId="http://localhost:8080/WWebS/ServerWalmartWS?wsdl" uri="wsdl/localhost_8080/WWebS/ServerWalmartWS.wsdl"/>
+    <system systemId="http://localhost:8080/WWebS/ServerWalmartWS?xsd=1" uri="wsdl/localhost_8080/WWebS/ServerWalmartWS.xsd_1.xsd"/>
+</catalog>

@@ -1,0 +1,450 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f8f8f8;
+    color: black;
+}
+
+header {
+    background: #0071ce;
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    height: 50px;
+}
+
+nav a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+main {
+    padding: 20px;
+    text-align: center;
+}
+
+h1, h2 {
+    color: #0071ce;
+}
+
+.formulario {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.formulario input {
+    margin: 10px 0;
+    padding: 8px;
+    width: 80%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background: #ffc220;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #ffb300;
+}
+
+.grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    text-align: center;
+}
+
+.card {
+    background: #ccc;
+    border-radius: 10px;
+    padding: 15px;
+    
+    width: 200px;
+    text-align: center;
+}
+
+.card img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+footer {
+    background: #0071ce;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    margin-top: 30px;
+}
+/* Banner Principal */
+.banner {
+    position: relative;
+    text-align: center;
+}
+.banner img {
+    width: 100%;
+    height: 400px;
+    
+}
+.banner-texto {
+    
+    top: 30%;
+    left: 50%;
+    border: #000;
+    color: white;
+    background: #c3cee0;
+    padding: 20px;
+    border-radius: 10px;
+}
+.btn-banner {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: #ffc220;
+    color: #000;
+    font-weight: bold;
+    border-radius: 5px;
+    text-decoration: none;
+}
+.btn-banner:hover {
+    background: #ffb300;
+}
+
+/* Categorías */
+.categorias, .ofertas {
+    padding: 40px 20px;
+    background: #fff;
+}
+.categorias h2, .ofertas h2 {
+    margin-bottom: 20px;
+}
+
+/* Frase Publicitaria */
+.frase {
+    background: #0071ce;
+    color: black;
+    padding: 30px;
+    text-align: center;
+    font-size: 1.2em;
+    font-style: italic;
+}
+/* Promos */
+.promos {
+    padding: 40px 20px;
+    background: #f8f8f8;
+    text-align: center;
+}
+
+.promos h2 {
+    color: #0071ce;
+    margin-bottom: 20px;
+}
+
+.grid-promos {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.promo-card {
+    background: #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 250px;
+    margin: 10px;
+}
+
+.promo-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.btn-promo {
+    display: block;
+    background: #ffc220;
+    color: black;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 10px;
+    text-align: center;
+    border-radius: 0 0 10px 10px;
+}
+
+.btn-promo:hover {
+    background: #ffb300;
+}
+/* home */
+.header {
+    background-color: #0071ce;
+    padding: 15px;
+    text-align: center;
+}
+.header a {
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+    font-weight: bold;
+}
+.header a:hover {
+    text-decoration: underline;
+}
+.logo {
+    height: 50px;
+}
+
+.buscador {
+    text-align: center;
+    margin: 20px;
+}
+.buscador input[type="text"] {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+.buscador input[type="submit"] {
+    padding: 8px 15px;
+    background-color: #ffc220;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+.buscador input[type="submit"]:hover {
+    background-color: #ffb300;
+}
+
+.contenedor {
+    width: 90%;
+    margin: auto;
+    text-align: center;
+}
+.titulo {
+    font-size: 20px;
+    color: #0071ce;
+    margin: 20px 0;
+}
+
+.tabla-productos {
+    width: 100%;
+}
+.tabla-productos th {
+    background-color:#ccc;
+    padding: 10px;
+}
+.tabla-productos td {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+.tabla-productos img {
+    border-radius: 5px;
+}
+
+.footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: 30px;
+}
+.footer a {
+    color: white;
+    margin: 0 10px;
+}
+/* ======== CARRITO ======== */
+.resumen-carrito {
+    margin-top: 20px;
+    text-align: center;
+    background: #f2f2f2;
+    padding: 20px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.resumen-carrito input[type="text"] {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 200px;
+}
+
+.btn-comprar {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #ffc220;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+.btn-comprar:hover {
+    background-color: #ffb300;
+}
+/* ======== ÓRDENES ======== */
+.mensaje-vacio {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #666;
+    font-style: italic;
+}
+/* ======== ADMIN USUARIOS ======== */
+.tabla-productos th, .tabla-productos td {
+    text-align: center;
+}
+
+.tabla-productos a {
+    color: #0071ce;
+    text-decoration: none;
+    font-weight: bold;
+}
+.tabla-productos a:hover {
+    text-decoration: underline;
+}
+/* ======== ADMIN PROMOS ======== */
+.formulario input[type="radio"], 
+.formulario input[type="checkbox"] {
+    margin: 5px;
+    width: auto;
+}
+/* ======== ADMIN PRODUCTOS ======== */
+.formulario {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    display: inline-block;
+    margin-bottom: 30px;
+}
+.formulario input, .formulario textarea {
+    margin: 5px 0;
+    padding: 8px;
+    width: 80%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.btn-guardar {
+    background: #0071ce;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+.btn-guardar:hover {
+    background: #005fa3;
+}
+
+
+
+/* ====== FORMULARIO DE ADMINPRODUCTOS ====== */
+form {
+    display: inline-block;
+    padding: 20px;
+    margin-top: 15px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: white;
+    text-align: center;
+    width: 350px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #444;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"] {
+    width: 95%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* ====== BOTONES GENERALES ====== */
+button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #0078d7;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #005a9e;
+}
+
+/* ====== TABLA DE LISTAPRODUCTOS ====== */
+table {
+    width: 90%;
+    margin: 20px auto;
+    background-color: white;
+    /* quitamos border-collapse */
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+}
+
+th {
+    background-color: #0078d7;
+    color: white;
+    font-size: 15px;
+}
+
+td img {
+    border-radius: 5px;
+}
+
+/* ====== BOTONES DENTRO DE LA TABLA ====== */
+table button {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #d9534f;
+    color: white;
+    border: none;
+}
+
+table button:hover {
+    background-color: #c9302c;
+}
+body {
+    text-align: center;  /* centra todo el contenido dentro del body */
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+h1 {
+    margin-top: 20px;
+    color: #333;
+    text-align: center; /* asegura que el título quede centrado */
+}
