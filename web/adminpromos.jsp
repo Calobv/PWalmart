@@ -1,17 +1,18 @@
 <%
-    // Bloque de seguridad para administraciÛn
+    // Bloque de seguridad para administraci√≥n
     String rol = (String) session.getAttribute("rol");
-
     if (rol == null || !rol.equals("admin")) {
-        // No est· logueado o no es admin -> redirige al index
+        // No est√° logueado o no es admin -> redirige al index
         response.sendRedirect("index.jsp");
         return;
     }
 %>
 
-
+<%@page import="java.sql.ResultSet"%>
+<%@page import="database.Dba"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,79 +22,199 @@
 <body>
     <!-- Encabezado -->
     <div class="header">
-        <img src="https://walmarthn.vtexassets.com/assets/vtex/assets-builder/walmarthn.store-theme/1.1.19/waltmart-logo___e887a7c223ca5d5111202f45453db619.png" alt="Walmart Logo" class="logo">
+        <img src="https://walmarthn.vtexassets.com/assets/vtex/assets-builder/walmarthn.store-theme/1.1.19/waltmart-logo___e887a7c223ca5d5111202f45453db619.png" 
+             alt="Walmart Logo" class="logo">
         <br>
+        <a href="homeadmin.jsp">Inicio Admin</a>
         <a href="adminproductos.jsp">Productos</a>
         <a href="adminusuarios.jsp">Usuarios</a>
-        <a href="index.jsp">Cerrar SesiÛn</a>
+        <a href="index.jsp">Cerrar Sesi√≥n</a>
     </div>
-
+    
     <!-- Crear Promo Code -->
     <div class="contenedor">
-        <p class="titulo"><b>Crear Promo Code</b></p>
-        <form action="admin_promos.jsp" method="post" class="formulario">
-            <label>CÛdigo:</label><br>
+        <h2 class="titulo">Crear Promo Code</h2>
+        
+        <form method="post" class="formulario">
+            <label>C√≥digo:</label><br>
             <input type="number" name="codigo" required><br><br>
-
+            
             <label>Tipo:</label><br>
-            <input type="radio" name="tipo" value="porcentaje"> Porcentaje 
-            <input type="radio" name="tipo" value="monto"> Monto fijo<br><br>
-
-            <label>RestricciÛn (n˙mero de usos, 0 = ilimitado):</label><br>
-            <input type="number" name="restriccion" required><br><br>
-
+            <input type="radio" name="tipo" value="porcentaje" required> Porcentaje 
+            <input type="radio" name="tipo" value="montoFijo" required> Monto fijo<br><br>
+            
+            <label>Descuento:</label><br>
+            <input type="number" name="descuento" step="0.01" min="0" required 
+                   placeholder="Ej: 15 (para 15% o L.15)"><br><br>
+            
+            <label>Restricci√≥n (n√∫mero de usos, 0 = ilimitado):</label><br>
+            <input type="number" name="restriccion" min="0" value="0" required><br><br>
+            
             <label>Activo:</label><br>
-            <input type="checkbox" name="activo" checked> SÌ≠<br><br>
-
-            <input type="submit" value="Guardar Promo Code" class="btn-guardar">
+            <input type="checkbox" name="activo" checked> S√≠<br><br>
+            
+            <button type="submit" class="btn-guardar">Guardar Promo Code</button>
             <button type="button" onclick="location.href='homeadmin.jsp'">Regresar a Home Administrador</button>
         </form>
     </div>
 
+    <%
+        // Procesar el formulario cuando se env√≠a
+        String codigo = request.getParameter("codigo");
+        String tipo = request.getParameter("tipo");
+        String descuentoStr = request.getParameter("descuento");
+        String restriccionStr = request.getParameter("restriccion");
+        String activoStr = request.getParameter("activo");
+
+        if (codigo != null && tipo != null && descuentoStr != null && restriccionStr != null) {
+            String mensaje = "";
+            
+            try {
+                // Validaciones
+                if (!codigo.matches("\\d+")) {
+                    mensaje = "El c√≥digo debe contener solo n√∫meros.";
+                } else {
+                    double descuento = Double.parseDouble(descuentoStr);
+                    int restriccion = Integer.parseInt(restriccionStr);
+                    boolean activo = (activoStr != null && activoStr.equals("on"));
+                    
+                    if (descuento < 0) {
+                        mensaje = "El descuento debe ser mayor o igual a 0.";
+                    } else if (restriccion < 0) {
+                        mensaje = "La restricci√≥n debe ser mayor o igual a 0.";
+                    } else {
+                        // Insertar en la base de datos
+                        Dba db = new Dba(application.getRealPath("/") + "daw.mdb");
+                        db.conectar();
+                        
+                        // Verificar si el c√≥digo ya existe
+                        db.query.execute("SELECT Codigo FROM PromoteCode WHERE Codigo='" + codigo + "'");
+                        ResultSet rs = db.query.getResultSet();
+                        
+                        if (rs.next()) {
+                            mensaje = "Ya existe un promo code con ese c√≥digo.";
+                        } else {
+                            // Insertar promo code
+                            String sql = "INSERT INTO PromoteCode (Codigo, Tipo, Descuento, Restriccion, Activo) " +
+                                        "VALUES ('" + codigo + "', '" + tipo + "', " + descuento + ", " + 
+                                        restriccion + ", " + (activo ? "-1" : "0") + ")";
+                            
+                            db.executeUpdate(sql);
+                            db.commit();
+                            mensaje = "Promo Code creado correctamente.";
+                        }
+                        
+                        rs.close();
+                        db.desconectar();
+                    }
+                }
+            } catch (NumberFormatException e) {
+                mensaje = "Error en los valores num√©ricos.";
+            } catch (Exception e) {
+                mensaje = "Error al crear promo code: " + e.getMessage();
+                e.printStackTrace();
+            }
+            
+            // Mostrar mensaje
+            String color = mensaje.contains("correctamente") ? "green" : "red";
+    %>
+            <p style="color:<%= color %>; text-align:center; font-weight:bold;"><%= mensaje %></p>
+    <%
+        }
+    %>
+
     <!-- Lista de Promo Codes -->
     <div class="contenedor">
-        <p class="titulo"><b>Lista de Promo Codes</b></p>
+        <h2 class="titulo">Lista de Promo Codes</h2>
+        
         <table class="tabla-productos">
             <thead>
                 <tr>
-                    <th>CÛdigo</th>
+                    <th>C√≥digo</th>
                     <th>Tipo</th>
-                    <th>RestricciÛn</th>
+                    <th>Descuento</th>
+                    <th>Restricci√≥n</th>
                     <th>Activo</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>1001</td>
-                    <td>Porcentaje (15%)</td>
-                    <td>5 usos</td>
-                    <td>S+i≠</td>
-                    <td>
+                <%
+                    Dba db = null;
+                    ResultSet rs = null;
+                    try {
+                        db = new Dba(application.getRealPath("/") + "daw.mdb");
+                        db.conectar();
                         
-                        <a href="adminpromos.jsp">Eliminar</a>
+                        db.query.execute("SELECT * FROM PromoteCode ORDER BY Codigo");
+                        rs = db.query.getResultSet();
+                        
+                        boolean hayPromoCodes = false;
+                        while (rs.next()) {
+                            hayPromoCodes = true;
+                            String tipoDB = rs.getString("Tipo");
+                            double descuentoDB = rs.getDouble("Descuento");
+                            int restriccionDB = rs.getInt("Restriccion");
+                            boolean activoDB = rs.getBoolean("Activo");
+                            
+                            String tipoMostrar = tipoDB.equals("porcentaje") ? 
+                                descuentoDB + "%" : "L. " + descuentoDB;
+                            String restriccionMostrar = restriccionDB == 0 ? 
+                                "Ilimitado" : restriccionDB + " usos";
+                %>
+                <tr>
+                    <td><%= rs.getString("Codigo") %></td>
+                    <td><%= tipoDB.equals("porcentaje") ? "Porcentaje" : "Monto Fijo" %></td>
+                    <td><%= tipoMostrar %></td>
+                    <td><%= restriccionMostrar %></td>
+                    <td><%= activoDB ? "S√≠" : "No" %></td>
+                    <td>
+                        <form action="eliminar_promocode.jsp" method="post" style="display:inline;">
+                            <input type="hidden" name="codigo" value="<%= rs.getString("Codigo") %>">
+                            <button type="submit" onclick="return confirm('¬øEst√° seguro de eliminar este promo code?')">Eliminar</button>
+                        </form>
                     </td>
                 </tr>
-                <tr>
-                    <td>2001</td>
-                    <td>Monto fijo (L.500)</td>
-                    <td>Ilimitado</td>
-                    <td>No</td>
-                    <td>
+                <%
+                        }
                         
-                        <a href="adminpromos.jsp">Eliminar</a>
+                        if (!hayPromoCodes) {
+                %>
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px;">
+                        No hay promo codes registrados
                     </td>
                 </tr>
+                <%
+                        }
+                        
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                %>
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px;">
+                        Error al cargar promo codes: <%= e.getMessage() %>
+                    </td>
+                </tr>
+                <%
+                    } finally {
+                        try {
+                            if (rs != null) rs.close();
+                            if (db != null) db.desconectar();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                %>
             </tbody>
         </table>
-         <!-- Bot√≥n para regresar -->
-<button onclick="location.href='index.jsp'">Regresar</button>
     </div>
-
+    
     <!-- Footer -->
     <div class="footer">
-        <p>&copy; 2025 Walmart | <a href="https://www.walmartcentroamerica.com/content/dam/walmart-centro-america/documents/privacidad/19032025_AVISO_DE_PRIVACIDAD.pdf">Pol√≠ticas 
-            de Privacidad</a> | <a href="https://www.walmart.com.hn/terminos-y-condiciones-de-compra">TÈrminos</a></p>
+        <p>&copy; 2025 Walmart | 
+        <a href="https://www.walmartcentroamerica.com/content/dam/walmart-centro-america/documents/privacidad/19032025_AVISO_DE_PRIVACIDAD.pdf">Pol√≠ticas de Privacidad</a> | 
+        <a href="https://www.walmart.com.hn/terminos-y-condiciones-de-compra">T√©rminos</a></p>
     </div>
 </body>
 </html>

@@ -166,7 +166,7 @@
             <p><b>Total a pagar: L. <%= String.format("%.2f", finalTotal) %></b></p>
             
             <button type="button" class="btn-comprar" onclick="location.href='home.jsp'">Continuar Comprando</button>
-            <input type="button" value="Realizar Compra" class="btn-comprar" onclick="location.href='pago.jsp'">
+            <input type="button" value="Realizar Compra" class="btn-comprar" onclick="location.href='pago.jsp<%= promoCode != null && !promoCode.trim().isEmpty() ? "?promocode=" + promoCode : "" %>'">
         </div>
         <% } %>
     </div>

@@ -1,4 +1,3 @@
-
 <%
     // Bloque de seguridad general
     String rol = (String) session.getAttribute("rol");
@@ -10,15 +9,17 @@
     }
 %>
 
+<%@page import="java.sql.ResultSet"%>
+<%@page import="database.Dba"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <title>Mis 脫rdenes - Walmart</title>
     <link rel="stylesheet" href="walmart.css">
 </head>
-
 <body>
     <!-- Encabezado -->
     <div class="header">
@@ -27,63 +28,161 @@
         <br>
         <a href="home.jsp">Home</a>
         <a href="carrito.jsp">Mi Carrito</a>
-        <a href="index.jsp">Cerrar Sesi髇</a>
+        <a href="index.jsp">Cerrar Sesi贸n</a>
     </div>
 
-    <!-- 脫rdenes -->
     <div class="contenedor">
-        <p class="titulo"><b>Mis 觬denes</b></p>
+        <p class="titulo"><b>Mis 脫rdenes de Compra</b></p>
 
-        <table class="tabla-productos">
-            <thead>
-                <tr>
-                    <th>C骴igo de Orden</th>
-                    <th>Productos</th>
-                    <th>Promo Code</th>
-                    <th>Total Pagado</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>ORD-1001</td>
-                    <td>
-                        Carb髇 Great Value Vegetal Briquetas 100% Natural - 2 kg, Maleta Bob Esponja colores - 20
-                        pulgadas
-                        <br>
-                        <img src="https://walmarthn.vtexassets.com/arquivos/ids/637163-500-auto?v=638781006135930000&width=500&height=auto&aspect=true"
-                             width="60">
-                        <img src="https://walmarthn.vtexassets.com/arquivos/ids/642676-500-auto?v=638797851562100000&width=500&height=auto&aspect=true" 
-                        width="60">
-                    </td>
-                    <td>DESC15</td>
-                    <td>L. 0.00</td>
-                </tr>
-                <tr>
-                    <td>ORD-1002</td>
-                    <td>
-                        L醡para De Techo Ms 1lt Negra Sin Bomb
-                        <br>
-                        <img src="https://walmarthn.vtexassets.com/arquivos/ids/541285-500-auto?v=638682435012170000&width=500&height=auto&aspect=true"
-                         width="60">
-                    </td>
-                    <td>NINGUNO</td>
-                    <td>L. 0.00</td>
-                </tr>
-            </tbody>
-        </table>
+        <%
+            String emailUsuario = (String) session.getAttribute("email");
+            Dba db = null;
+            ResultSet rs = null;
+            boolean hayOrdenes = false;
+            
+            try {
+                db = new Dba(application.getRealPath("/") + "daw.mdb");
+                db.conectar();
+                
+                // Buscar 贸rdenes del usuario actual
+                String sql = "SELECT o.CodigoOrden, o.CodigoCliente, o.ProductosComprados, o.PromoCode, o.TotalPagado, o.FechaCompra " +
+                            "FROM Ordenes o INNER JOIN Usuarios u ON o.CodigoCliente = u.C贸digo " +
+                            "WHERE u.Email = '" + emailUsuario + "' ORDER BY o.FechaCompra DESC";
+                
+                db.query.execute(sql);
+                rs = db.query.getResultSet();
+                
+                if (rs.next()) {
+                    hayOrdenes = true;
+        %>
+                    <table class="tabla-productos">
+                        <thead>
+                            <tr>
+                                <th>C贸digo de Orden</th>
+                                <th>Productos Comprados</th>
+                                <th>Promo Code</th>
+                                <th>Total Pagado</th>
+                                <th>Fecha</th>
+                                <th>Detalles</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        <%
+                    // Resetear el ResultSet
+                    rs.beforeFirst();
+                    while (rs.next()) {
+                        String codigoOrden = rs.getString("CodigoOrden");
+                        String productosComprados = rs.getString("ProductosComprados");
+                        String promoCode = rs.getString("PromoCode");
+                        if (promoCode == null || promoCode.trim().isEmpty()) {
+                            promoCode = "Ninguno";
+                        }
+                        double totalPagado = rs.getDouble("TotalPagado");
+                        String fechaCompra = rs.getString("FechaCompra");
+        %>
+                            <tr>
+                                <td><%= codigoOrden %></td>
+                                <td>
+                                    <%
+                                        // Mostrar nombres de productos en lugar de solo c贸digos
+                                        if (productosComprados != null && !productosComprados.trim().isEmpty()) {
+                                            String[] codigosProductos = productosComprados.split(",");
+                                            StringBuilder nombresProductos = new StringBuilder();
+                                            
+                                            for (String codigoProducto : codigosProductos) {
+                                                if (codigoProducto.trim().length() > 0) {
+                                                    try {
+                                                        String sqlProducto = "SELECT Nombre FROM Productos WHERE Codigo = '" + codigoProducto.trim() + "'";
+                                                        Dba dbProducto = new Dba(application.getRealPath("/") + "daw.mdb");
+                                                        dbProducto.conectar();
+                                                        dbProducto.query.execute(sqlProducto);
+                                                        ResultSet rsProducto = dbProducto.query.getResultSet();
+                                                        
+                                                        if (rsProducto.next()) {
+                                                            if (nombresProductos.length() > 0) {
+                                                                nombresProductos.append(", ");
+                                                            }
+                                                            nombresProductos.append(rsProducto.getString("Nombre"));
+                                                        }
+                                                        
+                                                        rsProducto.close();
+                                                        dbProducto.desconectar();
+                                                    } catch (Exception e) {
+                                                        // Si hay error, mostrar el c贸digo
+                                                        if (nombresProductos.length() > 0) {
+                                                            nombresProductos.append(", ");
+                                                        }
+                                                        nombresProductos.append("Producto " + codigoProducto.trim());
+                                                    }
+                                                }
+                                            }
+                                            out.print(nombresProductos.toString());
+                                        } else {
+                                            out.print("Sin productos");
+                                        }
+                                    %>
+                                </td>
+                                <td><%= promoCode %></td>
+                                <td>L. <%= String.format("%.2f", totalPagado) %></td>
+                                <td><%= fechaCompra != null ? fechaCompra : "N/A" %></td>
+                                <td>
+                                    <button type="button" onclick="verDetalleOrden('<%= codigoOrden %>')">Ver Detalle</button>
+                                </td>
+                            </tr>
+        <%
+                    }
+        %>
+                        </tbody>
+                    </table>
+        <%
+                } else {
+                    // No hay 贸rdenes
+        %>
+                    <div class="mensaje-vacio">
+                        <p>No tienes 贸rdenes de compra registradas.</p>
+                        <a href="home.jsp" class="btn-comprar">Ir a Comprar</a>
+                    </div>
+        <%
+                }
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+        %>
+                <div class="mensaje-vacio">
+                    <p style="color: red;">Error al cargar las 贸rdenes: <%= e.getMessage() %></p>
+                    <a href="home.jsp" class="btn-comprar">Volver al Inicio</a>
+                </div>
+        <%
+            } finally {
+                try {
+                    if (rs != null) rs.close();
+                    if (db != null) db.desconectar();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        %>
 
-        <!-- Mensaje alternativo si no hay 贸rdenes -->
-        <p class="mensaje-vacio">No tienes 髍denes registradas.</p>
-         <!-- Bot贸n para regresar -->
-<button onclick="location.href='home.jsp'">Regresar</button>
+        <!-- Botones de navegaci贸n -->
+        <div style="margin-top: 20px; text-align: center;">
+            <button onclick="location.href='home.jsp'">Continuar Comprando</button>
+            <button onclick="location.href='carrito.jsp'">Ver Mi Carrito</button>
+        </div>
     </div>
 
     <!-- Footer -->
     <div class="footer">
-        <p>&copy; 2025 Walmart | <a href="https://www.walmartcentroamerica.com/content/dam/walmart-centro-america/documents/privacidad/19032025_AVISO_DE_PRIVACIDAD.pdf">
-                Pol韙icas de Privacidad</a> | 
-            <a href="https://www.walmart.com.hn/terminos-y-condiciones-de-compra">T閞minos</a></p>
+        <p>&copy; 2025 Walmart | <a
+                href="https://www.walmartcentroamerica.com/content/dam/walmart-centro-america/documents/privacidad/19032025_AVISO_DE_PRIVACIDAD.pdf">Pol铆ticas
+                de Privacidad</a> |
+            <a href="https://www.walmart.com.hn/terminos-y-condiciones-de-compra">T茅rminos</a>
+        </p>
     </div>
-</body>
 
+    <script>
+        function verDetalleOrden(codigoOrden) {
+            alert("Detalle de la orden: " + codigoOrden + "\nPuedes implementar una ventana modal aqu铆 para mostrar m谩s informaci贸n.");
+        }
+    </script>
+</body>
 </html>
